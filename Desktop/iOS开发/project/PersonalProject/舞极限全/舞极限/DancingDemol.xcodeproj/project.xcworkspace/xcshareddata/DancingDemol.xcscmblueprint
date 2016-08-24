@@ -1,0 +1,59 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "8fd688a2-4ad7-4cdd-94ec-65d0b2dbc3b0++8333",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+    "8fd688a2-4ad7-4cdd-94ec-65d0b2dbc3b0++849" : {
+
+    },
+    "8fd688a2-4ad7-4cdd-94ec-65d0b2dbc3b0++8333" : {
+
+    },
+    "8fd688a2-4ad7-4cdd-94ec-65d0b2dbc3b0++9460" : {
+
+    }
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "8fd688a2-4ad7-4cdd-94ec-65d0b2dbc3b0++849" : 0,
+    "8fd688a2-4ad7-4cdd-94ec-65d0b2dbc3b0++9798" : 0,
+    "8fd688a2-4ad7-4cdd-94ec-65d0b2dbc3b0++8333" : 0,
+    "8fd688a2-4ad7-4cdd-94ec-65d0b2dbc3b0++9460" : 0,
+    "8fd688a2-4ad7-4cdd-94ec-65d0b2dbc3b0++8663" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "B205EFE4-7119-49CF-B847-8D51DB5CE667",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "8fd688a2-4ad7-4cdd-94ec-65d0b2dbc3b0++849" : "DancingDemol%E5%89%AF%E6%9C%AC",
+    "8fd688a2-4ad7-4cdd-94ec-65d0b2dbc3b0++9798" : "DancingDemol101",
+    "8fd688a2-4ad7-4cdd-94ec-65d0b2dbc3b0++8333" : "DancingDemo123\/",
+    "8fd688a2-4ad7-4cdd-94ec-65d0b2dbc3b0++9460" : "DancingDemo\/",
+    "8fd688a2-4ad7-4cdd-94ec-65d0b2dbc3b0++8663" : "DancingDemol102%E5%89%AF%E6%9C%AC"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "DancingDemol",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "DancingDemol.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "http:\/\/svnchina.com\/svn\/buyaohewoyiyang",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Subversion",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "8fd688a2-4ad7-4cdd-94ec-65d0b2dbc3b0++8333"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "http:\/\/svnchina.com\/svn\/buyaohewoyiyang",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Subversion",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "8fd688a2-4ad7-4cdd-94ec-65d0b2dbc3b0++849"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "http:\/\/svnchina.com\/svn\/buyaohewoyiyang",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Subversion",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "8fd688a2-4ad7-4cdd-94ec-65d0b2dbc3b0++8663"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "http:\/\/svnchina.com\/svn\/buyaohewoyiyang",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Subversion",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "8fd688a2-4ad7-4cdd-94ec-65d0b2dbc3b0++9460"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "http:\/\/svnchina.com\/svn\/buyaohewoyiyang",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Subversion",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "8fd688a2-4ad7-4cdd-94ec-65d0b2dbc3b0++9798"
+    }
+  ]
+}

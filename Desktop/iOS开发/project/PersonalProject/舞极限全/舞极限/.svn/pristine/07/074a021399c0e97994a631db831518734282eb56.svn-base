@@ -1,0 +1,20 @@
+//
+//  UIImageView+Asynclmage.m
+//  DancingDemol
+//
+//  Created by laouhn on 15/9/24.
+//  Copyright (c) 2015年 JHH. All rights reserved.
+//
+
+#import "UIImageView+Asynclmage.h"
+
+@implementation UIImageView (Asynclmage)
+
+- (void)JF_SetImageWithURLString:(NSString *)urlStr {
+    [NSURLConnection sendAsynchronousRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:urlStr]] queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+        self.image = [UIImage imageWithData:data];
+    }];
+}
+
+
+@end

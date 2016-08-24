@@ -1,0 +1,25 @@
+//
+//  TrainListModel.h
+//  DancingDemol
+//
+//  Created by laouhn on 15/9/22.
+//  Copyright (c) 2015年 JHH. All rights reserved.
+//
+#import <Foundation/Foundation.h>
+
+@interface TrainListModel : NSObject
+@property (nonatomic, copy) NSString *listID; // 存储id;
+@property (nonatomic, copy) NSString *title;  // 存储标题
+@property (nonatomic, copy) NSString *imageName; // 存储图片对象
+@property (nonatomic, copy) NSString *clickNum; // 存储学习人数
+@property (nonatomic, copy) NSString *publishTime; // 存储发表时间
+@property (nonatomic, copy) NSString *author;  // 作者
+@property (nonatomic, copy) NSString *source;   // 数据来源
+@property (nonatomic, copy) NSString *contentType;
+
+
+- (instancetype)initWithDictionary:(NSDictionary *)dic;
++ (instancetype)trainListModelWithDictionary:(NSDictionary *)dic;
+
+
+@end

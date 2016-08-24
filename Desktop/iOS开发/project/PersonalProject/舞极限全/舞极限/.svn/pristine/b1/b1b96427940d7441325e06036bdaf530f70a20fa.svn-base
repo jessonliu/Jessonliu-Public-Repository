@@ -1,0 +1,112 @@
+//
+//  HeaderDetailController.m
+//  DancingDemol
+//
+//  Created by laouhn on 15/9/28.
+//  Copyright (c) 2015年 JHH. All rights reserved.
+//
+
+#import "HeaderDetailController.h"
+#import "HeaderFiveBtnViewCell.h"
+#import "TrainDetailCellDefine.h"
+#import "NetWorkManager.h"
+#import "HeaderFiveBtnModel.h"
+#import "TrainDetailViewController.h"
+
+
+
+@interface HeaderDetailController ()
+@property (nonatomic, retain) NSMutableArray *dataSource; // 数据源
+
+
+@end
+
+@implementation HeaderDetailController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    // Uncomment the following line to preserve selection between presentations.
+    // self.clearsSelectionOnViewWillAppear = NO;
+    
+    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
+    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    
+    // 注册cell
+    [self layoutCell];
+    
+    [self getData];
+}
+
+// 注册cell
+- (void)layoutCell {
+    [self.tableView registerClass:[HeaderFiveBtnViewCell class] forCellReuseIdentifier:@"reuse"];
+    self.tableView.rowHeight = 24.7 * kBaseScale;
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+    self.tableView.backgroundColor = [UIColor cyanColor];
+}
+
+#pragma mark - Table view data source
+
+
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return self.dataSource.count;
+}
+
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    HeaderFiveBtnViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"reuse" forIndexPath:indexPath];
+    [cell configureCellWithModel:self.dataSource[indexPath.row]];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    TrainDetailViewController *trainDetailVC = [[TrainDetailViewController alloc] init];
+    [self.navigationController pushViewController:trainDetailVC animated:NO];
+    
+    [trainDetailVC release];
+}
+
+
+
+//  网络数据请求解析
+- (void)getData {
+    
+    // 数据源开辟空间
+    self.dataSource = [@[] mutableCopy];
+    NSString *urlStr = [NSString stringWithFormat:@"%@", self.str];
+    NSLog(@"%@", urlStr);
+    NetWorkManager *net = [[[NetWorkManager alloc] init] autorelease];
+    [net getDataWithURLString:urlStr success:^(NetWorkManager *net, id object) {
+        for (NSDictionary *dic in object[@"data"]) {
+            HeaderFiveBtnModel *model = [HeaderFiveBtnModel hederModelWithDictionary:dic];
+            [self.dataSource addObject:model];
+        }
+        // 完成解析 刷新数据
+        [self.tableView reloadData];
+    } fialBlock:^(NetWorkManager *net, NSError *error) {
+        NSLog(@"%@", error);
+    }];
+    
+}
+
+
+- (void)dealloc
+{
+    self.dataSource = nil;
+    self.str = nil;
+    [super dealloc];
+}
+
+
+
+
+@end

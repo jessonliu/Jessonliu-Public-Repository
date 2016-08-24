@@ -1,0 +1,126 @@
+//
+//  UIRecommendListController.m
+//  DancingDemol
+//
+//  Created by laouhn on 15/9/24.
+//  Copyright (c) 2015年 JHH. All rights reserved.
+//
+
+#import "UIRecommendListController.h"
+#import "TrainRocommendCell.h"
+#import "TrainRecommendModel.h"
+#import "NetWorkManager.h"
+#import "TrainDetailCellDefine.h"
+#import "TrainDetailViewController.h"
+#import "BasicNVC.h"
+#import "RecomHearController.h"
+
+
+@interface UIRecommendListController ()
+@property (nonatomic, retain) NSMutableArray *dataArray;
+@end
+
+@implementation UIRecommendListController
+
+- (void)dealloc
+{
+    self.dataArray = nil;
+    [super dealloc];
+}
+
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // 可变数组开辟空间
+    self.dataArray = [@[] mutableCopy];
+   
+      // 创建网络请求对象
+    [self getData];
+    
+    // 注册cell
+    [self layoutTableView];
+    
+    // 创建页眉
+    [self layoutHeaderView];
+}
+
+// 注册cell
+- (void)layoutTableView {
+    // 注册cell
+    [self.tableView registerClass:[TrainRocommendCell class] forCellReuseIdentifier:@"reuse"];
+    // 设置行高
+    self.tableView.rowHeight = kHeight_RecCll;
+    // 3.设置分割线的样式
+    self.tableView.separatorStyle = UITableViewCellSelectionStyleNone;
+}
+
+// 创建页眉
+- (void)layoutHeaderView {
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, kHeight_Header)];
+    self.tableView.tableHeaderView = view;
+    
+    RecomHearController *recommendVC =[[[RecomHearController alloc] init] autorelease];
+    recommendVC.view.frame = CGRectMake(0, 0, kScreenWidth, kHeight_Header);
+    [self addChildViewController:recommendVC];
+    [self.tableView.tableHeaderView addSubview:recommendVC.view];
+}
+
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - Table view data source
+
+// 返回行数
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    // Return the number of rows in the section.
+    return self.dataArray.count;
+}
+
+// 返回cell
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    TrainRocommendCell *cell = [tableView dequeueReusableCellWithIdentifier:@"reuse" forIndexPath:indexPath];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    [cell configureCellWithModel:self.dataArray[indexPath.item]];
+    
+    return cell;
+}
+
+// 选中cell 触发的方法
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    BasicNVC *NVC = (BasicNVC *)self.navigationController;
+    NVC.viewNVC.hidden = YES;
+    TrainDetailViewController *detailVC = [[TrainDetailViewController alloc] init];
+    detailVC.model = self.dataArray[indexPath.row];
+    detailVC.movieStr = ((TrainRecommendModel *)self.dataArray[indexPath.row]).file;
+    [self.navigationController pushViewController:detailVC animated:NO];
+    [detailVC release];
+}
+
+
+
+
+// 网络数据请求, 解析
+- (void)getData {
+    // 创建网络请求对象
+    NetWorkManager *net = [[NetWorkManager alloc] init];
+    [net getDataWithURLString:@"http://interface.tiaooo.com/?&platform=android&version=2.6.3&openid=040502418AAFE2976D2D683E8DAB750F&apptoken=fca532e266489d84aec05924164ac854&m=top_list&page=1&c=elegant" success:^(NetWorkManager *net, id object) {
+        for (NSDictionary *dic in object[@"data"]) {
+            TrainRecommendModel *model = [TrainRecommendModel trainRecommendModelWithDictionary:dic];
+            [self.dataArray addObject:model];
+        }
+        [self.tableView reloadData];
+    } fialBlock:^(NetWorkManager *net, NSError *error) {
+        NSLog(@"%@", error);
+    }];
+}
+
+
+
+
+
+
+
+@end

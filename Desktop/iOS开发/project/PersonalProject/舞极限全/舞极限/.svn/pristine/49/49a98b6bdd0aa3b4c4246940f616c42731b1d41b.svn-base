@@ -1,0 +1,113 @@
+//
+//  BasicNVC.m
+//  DancingDemol
+//
+//  Created by laouhn on 15/9/24.
+//  Copyright (c) 2015年 JHH. All rights reserved.
+//
+
+#import "BasicNVC.h"
+#import "WeatherModel.h"
+#import "WeatherManager.h"
+#import "UIImageView+AsyncImage.h"
+#import "WeatherViewController.h"
+#import "MacroValue.h"
+
+@interface BasicNVC ()
+
+@property (nonatomic, assign)NSInteger a;
+
+@end
+
+@implementation BasicNVC
+
+
+
+
+
+- (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated{
+    [super pushViewController:viewController animated:NO];
+    self.a ++;
+    if (self.a != 1) {
+        self.viewNVC.hidden = YES;
+        
+        self.titileLabel = [[UILabel alloc] initWithFrame:CGRectMake(110*kOneWidth5s, 32*kOneHeight5s, 100*kOneWidth5s, 20*kOneHeight5s)];
+        self.titileLabel.textAlignment = NSTextAlignmentCenter;
+        self.titileLabel.font = [UIFont systemFontOfSize:21 weight:5];
+        self.titileLabel.textColor = [UIColor whiteColor];
+        [self.view addSubview:self.titileLabel];
+        [self.titileLabel release];
+        
+    }
+    if ([viewController isKindOfClass:[WeatherViewController class]]) {
+        ((WeatherViewController *)viewController).weatherModel = self.weatherModel;
+    }
+}
+
+- (UIViewController *)popViewControllerAnimated:(BOOL)animated {
+    self.titileLabel.hidden = YES;
+    self.viewNVC.hidden = NO;
+    return  [super popViewControllerAnimated:NO];
+}
+
+- (void)loadView {
+    [super loadView];
+    
+//------改变左上角天气信息
+    [WeatherManager getWeatherModelSuccess:^(WeatherManager *manager, NSArray *arr) {        
+        NSDictionary *dic = arr[0];
+        self.weatherModel = [[DetailWeather new] autorelease];
+        [self.weatherModel setValuesForKeysWithDictionary:dic];
+        
+        self.viewNVC.viewNVC_weather_where.text = self.weatherModel.name;
+        self.viewNVC.viewNVC_weather_temperature.text = self.weatherModel.temp;
+        [self.viewNVC.viewNVC_weather_image lo_setImageWithURL:self.weatherModel.iconImageView];
+    } fail:^(WeatherManager *manager, NSError *error) {
+        nil;
+    }];
+    
+}
+
+
+
+
+
+
+
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.viewNVC = [[[NSBundle mainBundle] loadNibNamed:@"navigationView" owner:nil options:nil] firstObject];
+    self.viewNVC.frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 44);
+    [self.navigationBar addSubview:self.viewNVC];
+    
+  
+    
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+
+- (void)dealloc
+{
+    self.titileLabel = nil;
+    self.weatherModel = nil;
+    self.model = nil;
+    self.viewNVC = nil;
+    [super dealloc];
+}
+
+@end

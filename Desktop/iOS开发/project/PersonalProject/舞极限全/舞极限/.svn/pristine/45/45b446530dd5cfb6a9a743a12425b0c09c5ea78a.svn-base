@@ -1,0 +1,128 @@
+//
+//  TrainListController.m
+//  DancingDemol
+//
+//  Created by laouhn on 15/9/24.
+//  Copyright (c) 2015年 JHH. All rights reserved.
+//
+
+#import "TrainListController.h"
+#import "TrainViewCell.h"
+#import "NetWorkManager.h"
+#import "TrainDetailCellDefine.h"
+#import "TrainDetailViewController.h"
+#import "TrainDetailModel.h"
+
+
+@interface TrainListController ()
+
+@end
+
+@implementation TrainListController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+//    // 网络数据求情解析
+//    [self getData];
+    
+    // 注册cell
+    [self layoutTabView];
+}
+
+
+
+// 注册cell
+- (void)layoutTabView {
+    // 1.注册Cell
+    [self.tableView registerClass:[TrainViewCell class] forCellReuseIdentifier:@"reuse"];
+    // 3.设置分割线的样式
+    self.tableView.separatorStyle = UITableViewCellSelectionStyleNone;
+}
+
+#pragma mark - Table view data source
+// 返回cell行数
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    
+    return self.dataArray.count;
+}
+
+
+// 返回cell
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    TrainViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"reuse"];
+    [cell configureCellWithModel:self.dataArray[indexPath.row]];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    return cell;
+}
+
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    return kMarginTop_downTitle;
+}
+
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    if (tableView.tag != 101) {
+        TrainDetailViewController *detainVC = [[TrainDetailViewController alloc] init];
+        detainVC.listModel = self.dataArray[indexPath.row];
+        detainVC.viewTag = tableView.tag;
+        [self.navigationController pushViewController:detainVC animated:YES];
+        [detainVC release];
+    }
+}
+
+
+
+
+#pragma mark - UITableViewDelegate
+
+// 传唯一标识符ID
+- (void)getTitleID:(NSString *)titID {
+    [self getDataWithURLString:titID];
+}
+
+
+
+// 网络数据请求解析
+- (void)getDataWithURLString:(NSString *)str {
+    self.dataArray = [@[] mutableCopy];
+    // 创建URL对象
+    NSString *urlStr = [NSString stringWithFormat:@"http://client-api.dingdone.com/97AX8NW8A6/6944/listcontents?column_id=%@&from=0&size=15", str];
+    NetWorkManager *net = [[NetWorkManager alloc] init] ;
+    [net getDataWithURLString:urlStr success:^(NetWorkManager *net, id object) {
+        for (NSDictionary *tempDic in object[@"data"][@"listData"]) {
+            // 封装
+            TrainListModel *trainListModel = [TrainListModel trainListModelWithDictionary:tempDic];
+            //添加到array数据源
+            [self.dataArray addObject:trainListModel];
+    }
+        // 解析完成刷新数据
+        [self.tableView reloadData];
+
+    } fialBlock:^(NetWorkManager *net, NSError *error) {
+        NSLog(@"%@", error);  // 解析失败
+    }];
+    [net release];
+}
+
+
+
+
+
+
+
+// 释放
+- (void)dealloc
+{
+    self.dataArray = nil;
+    [super dealloc];
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+@end

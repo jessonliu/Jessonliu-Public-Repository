@@ -1,0 +1,69 @@
+//
+//  ThumbView.m
+//  DancingDemol
+//
+//  Created by laouhn on 15/10/5.
+//  Copyright © 2015年 JHH. All rights reserved.
+//
+
+#import "ThumbView.h"
+#import "TrainDetailCellDefine.h"
+#import "TrainDetailModel.h"
+#import "SingleTon.h"
+
+@implementation ThumbView
+
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+    // 1.获取手指对象
+    UITouch *touch = [touches anyObject];
+    // 2.获取手指当前位置
+    CGPoint currentPoint = [touch locationInView:self]; //currentPoint 当前位置
+    // 3.获取手指之间位置
+    CGPoint previousPoint = [touch previousLocationInView:self]; //previousPoint 之前的位置
+    
+    // 4.计算移动的增量
+    CGFloat dx = currentPoint.x - previousPoint.x;
+    
+        // 5.修改视图位置.
+        if (self.center.x >= (kBaseScale * 3 + 2 * kMargin) && self.center.x <= 25 * kBaseScale + kMargin) {
+            // 5.修改视图位置.
+            CGPoint tempPoint = self.center;
+            tempPoint.x = self.center.x + dx;
+            self.center = tempPoint;
+        }
+        else if (self.center.x > (25 * kBaseScale + kMargin)){
+            CGPoint temp = self.center;
+            temp.x = 25 * kBaseScale + kMargin;
+            self.center = temp;
+        } else if (self.center.x < (kBaseScale * 3 + 2 * kMargin)) {
+            CGPoint temp = self.center;
+            temp.x = (kBaseScale * 3 + 2 * kMargin);
+            self.center = temp;
+        }
+
+    
+   
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(nullable UIEvent *)event{
+    self.userInteractionEnabled = NO;
+    
+    if ((kBaseScale * 3 + 2 * kMargin) <= self.center.x && self.center.x <= (25 * kBaseScale + kMargin)) {
+        CGPoint tempPoint = self.center;
+        self.center = tempPoint;
+        
+    } else if (self.center.x > (25 * kBaseScale + kMargin)){
+        CGPoint temp = self.center;
+        temp.x = (25 * kBaseScale + kMargin);
+        self.center = temp;
+    } else if (self.center.x < (kBaseScale * 3 + 2 * kMargin)) {
+        CGPoint temp = self.center;
+        temp.x = (kBaseScale * 3 + 2 * kMargin);
+        self.center = temp;
+    }
+    
+    [SingleTon sendDataSingleton].mar = self.center.x;
+    self.userInteractionEnabled = YES;
+}
+
+@end

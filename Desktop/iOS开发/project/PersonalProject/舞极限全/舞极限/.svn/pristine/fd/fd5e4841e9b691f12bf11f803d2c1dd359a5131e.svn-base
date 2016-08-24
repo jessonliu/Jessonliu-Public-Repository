@@ -1,0 +1,95 @@
+//
+//  ReHeadBtnViewController.m
+//  DancingDemol
+//
+//  Created by laouhn on 15/9/28.
+//  Copyright (c) 2015年 JHH. All rights reserved.
+//
+
+#import "ReHeadBtnViewController.h"
+#import "TrainDetailCellDefine.h"
+#import "HeaderDetailController.h"
+
+@interface ReHeadBtnViewController ()
+
+@end
+
+@implementation ReHeadBtnViewController
+
+- (void)viewDidLoad {
+   
+    [super viewDidLoad];
+    [self layoutSubView];
+   
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+- (void)layoutSubView {
+    self.btn = [[[UIButton alloc] initWithFrame:CGRectMake(kMargin, kMargin, kWidth_Btn, kWidth_Btn)] autorelease];
+    self.btn.layer.cornerRadius = kWidth_Btn / 2;
+    self.btn.layer.masksToBounds = YES;
+    [self.btn setBackgroundImage:[UIImage imageNamed:@"u=2689823426,2287921365&fm=21&gp=0.jpg"] forState:UIControlStateNormal];
+   [self.btn addTarget:self action:@selector(handleButton:) forControlEvents:UIControlEventTouchUpInside];
+
+    self.titleLabel = [[[UILabel alloc] initWithFrame:CGRectMake(kMargin * 0.5, CGRectGetMaxY(self.btn.frame), kWidth_Btn + kMargin, 2 * kMargin)] autorelease];
+    self.titleLabel.layer.cornerRadius = 8;
+    self.titleLabel.layer.masksToBounds = YES;
+    self.titleLabel.text = @"poping";
+    self.titleLabel.font = [UIFont systemFontOfSize:12];
+    self.titleLabel.textAlignment = NSTextAlignmentCenter;
+    self.titleLabel.textColor = [UIColor grayColor];
+
+    [self.view addSubview:self.btn];
+    [self.view addSubview:self.titleLabel];
+}
+
+- (void)handleButton:(UIButton *)button {
+    NSArray *array = [self sendArray];
+    HeaderDetailController *detailVC = [[HeaderDetailController alloc] init];
+    switch (button.tag) {
+        case 200:
+            detailVC.str = array[0];
+            break;
+        case 201:
+            detailVC.str = array[1];
+            break;
+        case 202:
+            detailVC.str = array[2];
+            break;
+        case 203:
+            detailVC.str = array[3];
+            break;
+        case 204:
+            detailVC.str = array[4];
+            break;
+        default:
+            break;
+    }
+    [self.navigationController pushViewController:detailVC animated:YES];
+
+    
+    [detailVC release];
+}
+
+
+// 网址数组
+- (NSArray *)sendArray {
+    return @[@"http://interface.tiaooo.com/?&version=2.6.3&dance=MTV+DANCE&page=1&c=school&m=slist",
+             @"http://interface.tiaooo.com/?&platform=android&version=2.6.3&dance=爵士舞&page=1&c=school&m=slist",
+             @"http://interface.tiaooo.com/?&version=2.6.3&dance=HIPHOP&page=1&c=school&m=slist",
+             @"http://interface.tiaooo.com/?&version=2.6.3&dance=芭蕾&page=1&c=school&m=slist",
+             @"http://interface.tiaooo.com/?&version=2.6.3&dance=现代舞&page=1&c=school&m=slist"];
+}
+
+- (void)dealloc
+{
+    self.titleLabel = nil;
+    self.btn = nil;
+    [super dealloc];
+}
+
+@end

@@ -1,0 +1,173 @@
+//
+//  ListViewController.m
+//  DancingDemol
+//
+//  Created by laouhn on 15/9/28.
+//  Copyright (c) 2015年 JHH. All rights reserved.
+//
+
+#import "ListViewController.h"
+#import "ListModel.h"
+#import "NetWorkManager.h"
+#import "SpecialViewController.h"
+#import "ImageAndLabeCell.h"
+#import "DetailViewController.h"
+#import "BasicNVC.h"
+
+@interface ListViewController ()
+
+@property (nonatomic, retain)NSMutableArray *dataSource;
+
+@end
+
+@implementation ListViewController
+
+static NSString * const reuseIdentifier = @"Cell";
+
+
+- (NSMutableArray *)dataSource {
+    if (!_dataSource) {
+        self.dataSource = [NSMutableArray arrayWithCapacity:1];
+    }
+    return [[_dataSource retain] autorelease];
+}
+
+
+
+- (void)listviewDidLoadWithID:(NSString *)sID type:(ListViewController *)type{
+    [super viewDidLoad];
+    
+    self.collectionView.backgroundColor = [UIColor whiteColor];
+    self.collectionView.showsVerticalScrollIndicator = NO;
+    self.collectionView.backgroundColor = [UIColor colorWithRed:234/255.0 green:234/255.0 blue:234/255.0 alpha:1];
+    
+    [self.collectionView registerClass:[ImageAndLabeCell class] forCellWithReuseIdentifier:reuseIdentifier];
+    
+    //网络连接请求
+    self.URLID = sID;
+    NSString *URLstr = [NSString stringWithFormat:@"http://client-api.dingdone.com/97AX8NW8A6/12288/listcontents?&column_id=%@&from=0&size=15&site_id=1093", self.URLID];
+    NetWorkManager *manger = [NetWorkManager new];
+    [manger getDataWithURLString:URLstr success:^(NetWorkManager *net, id object) {
+        [self analysisWithDictionary:object type:type];
+    } fialBlock:^(NetWorkManager *net, NSError *error) {
+        nil;
+    }];
+    
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+#pragma mark <UICollectionViewDataSource>
+
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
+#warning Incomplete method implementation -- Return the number of sections
+    return 1;
+}
+
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    return self.dataSource.count;
+}
+
+- (ImageAndLabeCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    ImageAndLabeCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
+    cell.model = self.dataSource[indexPath.row];
+    [cell.list_imageView lo_setImageWithURL:cell.model.imageURL];
+    cell.list_label.text = cell.model.title;
+    // Configure the cell
+    
+    return cell;
+}
+
+#pragma makr - 网络数据请求及解析
+- (void)analysisWithDictionary:(NSDictionary *)dic type:(ListViewController *)type {
+    [dic[@"data"][@"listData"] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        ListModel *model = [ListModel new];
+        [model setValuesForKeysWithDictionary:obj];
+        [self.dataSource addObject:model];
+        [model release];
+    }];
+    [type.collectionView reloadData];
+}
+
+
+
+
+//为cell指定高度
+- (CGFloat)collectionView:(UICollectionView *)collectionView
+                   layout:(UICollectionViewWaterfallLayout *)collectionViewLayout
+ heightForItemAtIndexPath:(NSIndexPath *)indexPath {
+    ListModel *model = self.dataSource[indexPath.row];
+     return ([model.imageHeight intValue] * (([UIScreen mainScreen].bounds.size.width - 30) / 2) / ([model.imageWidth intValue]*1.0)) + 50 ;
+
+}
+
+
+
+
+
+#pragma mark <UICollectionViewDelegate>
+
+/*
+// Uncomment this method to specify if the specified item should be highlighted during tracking
+- (BOOL)collectionView:(UICollectionView *)collectionView shouldHighlightItemAtIndexPath:(NSIndexPath *)indexPath {
+	return YES;
+}
+*/
+
+
+//cell选中时触发
+- (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    
+    ListModel *model = (ListModel *)(self.dataSource[indexPath.row]);
+    
+    //选中的cell的详情链接
+    NSString *url = [NSString stringWithFormat:@"http://client-api.dingdone.com/97AX8NW8A6/content/%@?&tplId=Tpl1", model.listID];
+    
+    //跳转到详情页面
+    DetailViewController *detailVC = [DetailViewController new];
+    detailVC.detailURL = url;
+    BasicNVC *nav = (BasicNVC *)self.navigationController;
+    [nav pushViewController:detailVC animated:YES];
+    [detailVC release];
+    
+    return YES;
+}
+
+
+/*
+// Uncomment these methods to specify if an action menu should be displayed for the specified item, and react to actions performed on the item
+- (BOOL)collectionView:(UICollectionView *)collectionView shouldShowMenuForItemAtIndexPath:(NSIndexPath *)indexPath {
+	return NO;
+}
+
+- (BOOL)collectionView:(UICollectionView *)collectionView canPerformAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender {
+	return NO;
+}
+
+- (void)collectionView:(UICollectionView *)collectionView performAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender {
+	
+}
+*/
+
+- (void)dealloc
+{
+    self.specailVC = nil;
+    self.URLID = nil;
+    [super dealloc];
+}
+
+@end

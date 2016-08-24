@@ -1,0 +1,212 @@
+//
+//  TrainRocommendCell.m
+//  DancingDemol
+//
+//  Created by laouhn on 15/9/24.
+//  Copyright (c) 2015年 JHH. All rights reserved.
+//
+
+#import "TrainRocommendCell.h"
+#import "TrainDetailCellDefine.h"
+#import "UIImageView+Cache.h"
+//#import "UIImage"
+//#import "UIImageView"
+
+
+@implementation TrainRocommendCell
+
+- (void)awakeFromNib {
+    // Initialization code
+}
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+    [super setSelected:selected animated:animated];
+
+    // Configure the view for the selected state
+}
+
+// 重写初始化方法
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+    if (self) {
+        // 添加子空间
+        self.backgroundColor = [UIColor colorWithRed:228 / 256.0 green:228 / 256.0 blue:228 / 256.0 alpha:1];
+        
+        [self addSubview:self.BGImageView];
+        [self addSubview:self.iconImageView];
+        [self addSubview:self.likeCountIV];
+        [self.cellImageView addSubview:self.lengthLabel];
+        [self addSubview:self.cellImageView];
+        [self addSubview:self.titleLable];
+        [self addSubview:self.topLabel];
+        [self addSubview:self.timeLabel];
+        
+    }
+    return self;
+}
+
+
+
+// 背景
+- (UIImageView *)BGImageView {
+    if (!_BGImageView) {
+        CGRect frame = CGRectMake(0, kMargin * 0.5, kScreenWidth, kHeight_RecCll);
+        self.BGImageView = [[[UIImageView alloc] initWithFrame:frame] autorelease];
+        self.BGImageView.backgroundColor = [UIColor whiteColor];
+        self.BGImageView.image = [UIImage imageNamed:@"dd_dip_detail_nor"];
+    }
+    return [[_BGImageView retain] autorelease];
+}
+
+
+// 头像
+- (UIImageView *)iconImageView {
+    if (!_iconImageView) {
+        CGRect frame = CGRectMake(kMargin, kMargin, kWidth_icon, kWidth_icon);
+        self.iconImageView = [[[UIImageView alloc] initWithFrame:frame] autorelease];
+        self.iconImageView.backgroundColor = [UIColor whiteColor];
+        self.iconImageView.layer.cornerRadius = kWidth_icon / 2;
+        self.iconImageView.layer.masksToBounds = YES;
+    }
+    return [[_iconImageView retain] autorelease];
+}
+
+
+// 上标题
+- (UILabel *)topLabel {
+    if (!_topLabel) {
+        CGRect frame = CGRectMake(CGRectGetMaxX(self.iconImageView.frame) + kMargin, 5, kWidth_TopLab, kWidth_icon - 5);
+        self.topLabel = [[[UILabel alloc] initWithFrame:frame] autorelease];
+        self.topLabel.font = [UIFont systemFontOfSize:14];
+        self.topLabel.numberOfLines = 0;
+    }
+    return [[_topLabel retain ] autorelease];
+}
+
+// 喜欢人数
+- (UILabel *)likeCountIV {
+    if (!_likeCountIV) {
+        CGRect frame = CGRectMake(kScreenWidth - 4 * kMargin, kMargin, 4 * kMargin, kWidth_icon);
+        self.likeCountIV = [[[UILabel alloc] initWithFrame:frame] autorelease];
+        self.likeCountIV.font = [UIFont systemFontOfSize:14];
+    
+        UIImageView *likeView = [[UIImageView alloc] initWithFrame:CGRectMake(kScreenWidth - CGRectGetWidth(self.likeCountIV.frame) - kWidth_icon, kMargin, kWidth_icon, kWidth_icon)];
+        likeView.image = [UIImage imageNamed:@"Player_心_红色@2x"];
+        [self addSubview:likeView];
+        [likeView release];
+    }
+    return [[_likeCountIV retain] autorelease];
+}
+
+// 上传时间
+- (UILabel *)timeLabel {
+    if (!_timeLabel) {
+        self.timeLabel = [[[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.iconImageView.frame) + kMargin, CGRectGetMaxY(self.topLabel.frame), kScreenWidth / 5, kMargin)] autorelease];
+        self.timeLabel.font = [UIFont systemFontOfSize:10.0];
+        self.timeLabel.textColor = [UIColor grayColor];
+        
+    }
+    return [[_timeLabel retain] autorelease];
+}
+
+
+
+// 视频时长
+- (UILabel *)lengthLabel {
+    if (!_lengthLabel) {
+        self.lengthLabel = [[[UILabel alloc] initWithFrame:CGRectMake(kScreenWidth - kMargin - kWidth_length, kMargin, kWidth_length, 25)] autorelease];
+        self.lengthLabel.font = [UIFont systemFontOfSize:12.0];
+        self.lengthLabel.backgroundColor = [UIColor grayColor];
+        self.lengthLabel.alpha = 0.5;
+        self.lengthLabel.textAlignment = NSTextAlignmentCenter;
+        self.lengthLabel.textColor = [UIColor whiteColor];
+        self.lengthLabel.layer.cornerRadius = 12;
+        self.lengthLabel.layer.masksToBounds = YES;
+        self.lengthLabel.alpha = 0.6;
+    }
+    return [[_lengthLabel retain] autorelease];
+}
+
+
+
+// 显示图片
+- (UIImageView *)cellImageView {
+    if (!_cellImageView) {
+        CGRect frame = CGRectMake(0, CGRectGetMaxY(self.iconImageView.frame) + kMargin, kScreenWidth, kHeight_RecCellV);
+        self.cellImageView = [[[UIImageView alloc] initWithFrame:frame] autorelease];
+        self.cellImageView.image = [UIImage imageNamed:@"FnUmjIbfXpOn1nvn4gWm4R4UZVLS.jpeg"];
+        
+        // 锯齿效果
+        NSInteger count = 8;
+        for (int i = 0; i < kScreenWidth / count; i ++) {
+            UIImageView *bottomImage = [[UIImageView alloc] initWithFrame:CGRectMake(count * i, CGRectGetHeight(self.cellImageView.frame) - count, count, count)];
+            bottomImage.image = [UIImage imageNamed:@"cwbsq_arrow@2x"];
+            [self.cellImageView addSubview:bottomImage];
+            [bottomImage release];
+        }
+       
+        
+        
+        
+    }
+    return [[_cellImageView retain] autorelease];
+}
+
+
+// 显示视频时长
+- (UILabel *)pesonCount {
+    if (!_lengthLabel) {
+        CGRect frame = CGRectMake(kMargin, kScreenWidth - kWidth_length - kMargin, kWidth_length, 2 * kMargin);
+        self.lengthLabel = [[[UILabel alloc] initWithFrame:frame] autorelease];
+        self.lengthLabel.backgroundColor = [UIColor blackColor];
+        self.lengthLabel.font = [UIFont systemFontOfSize:11.0];
+        self.lengthLabel.textColor = [UIColor whiteColor];
+        self.lengthLabel.textAlignment = NSTextAlignmentCenter;
+        self.lengthLabel.layer.cornerRadius = 8;
+        self.lengthLabel.layer.masksToBounds = YES;
+    }
+    return [[_lengthLabel retain] autorelease];
+}
+
+// 显示下标题
+- (UILabel *)titleLable {
+    if (!_titleLable) {
+        CGRect frame = CGRectMake(kMargin, kMarginTop_downTitle, kScreenWidth - 2 * kMargin, kWidth_length - kMargin / 2);
+        self.titleLable = [[[UILabel alloc] initWithFrame:frame] autorelease];
+        self.titleLable.font = [UIFont systemFontOfSize:16];
+        self.titleLable.numberOfLines = 0;
+    }
+    return [[_titleLable retain] autorelease];
+}
+
+
+
+// 控件赋值
+- (void)configureCellWithModel:(TrainRecommendModel *)model {
+    [self.cellImageView  JF_setImageWithURL:model.thumb placeHolderImage:@"default_indexpic_2x.png"];
+    [self.iconImageView JF_setImageWithURL:model.face placeHolderImage:@"default_indexpic_2x.png"];
+    self.titleLable.text = model.content;
+    self.topLabel.text = model.nicheng;
+    self.timeLabel.text = model.inserttime;
+    self.likeCountIV.text = model.likeCount;
+    self.lengthLabel.text = model.lengthViedo;
+}
+
+
+
+
+- (void)dealloc
+{
+    self.timeLabel = nil;
+    self.topLabel = nil;
+    self.BGImageView = nil;
+    self.iconImageView = nil;
+    self.lengthLabel = nil;
+    self.cellImageView = nil;
+    self.titleLable = nil;
+    self.likeCountIV = nil;
+    [super dealloc];
+}
+
+
+@end

@@ -1,0 +1,45 @@
+//
+//  navigationView.m
+//  DancingDemol
+//
+//  Created by laouhn on 15/9/24.
+//  Copyright (c) 2015年 JHH. All rights reserved.
+//
+
+#import "navigationView.h"
+#import "WeatherViewController.h"
+#import "UIView+ForViewController.h"
+#import "BasicNVC.h"
+#import "WeatherModel.h"
+
+@implementation navigationView
+
+/*
+// Only override drawRect: if you perform custom drawing.
+// An empty implementation adversely affects performance during animation.
+- (void)drawRect:(CGRect)rect {
+    // Drawing code
+}
+*/
+- (IBAction)iconAction:(UIButton *)sender {
+    NSLog(@"点击头像");
+    
+}
+- (IBAction)weatherAction:(UIButton *)sender {
+    WeatherViewController *weatherVC = [[WeatherViewController alloc] init];
+    BasicNVC *rootVC = (BasicNVC *)[self superViewController];
+    [rootVC pushViewController:weatherVC animated:YES];
+}
+
+
+
+- (void)dealloc {
+    [_viewNVC_titileLabel release];
+    [_viewNVC_icon_button release];
+    [_viewNVC_weather_button release];
+    [_viewNVC_weather_image release];
+    [_viewNVC_weather_temperature release];
+    [_viewNVC_weather_where release];
+    [super dealloc];
+}
+@end

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="8191" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="aMJ-Cj-nKm" customClass="navigationView">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <button opaque="NO" alpha="0.29999999999999999" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="U4F-N9-8vm">
+                    <rect key="frame" x="10" y="0.0" width="95" height="44"/>
+                    <state key="normal">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="weatherAction:" destination="aMJ-Cj-nKm" eventType="touchUpInside" id="Tb6-mb-Txk"/>
+                    </connections>
+                </button>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CtW-V9-CKo">
+                    <rect key="frame" x="20" y="6" width="20" height="20"/>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="获取天气ing~" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QtA-H6-jbE">
+                    <rect key="frame" x="9" y="24" width="90" height="21"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kzJ-zG-JLY">
+                    <rect key="frame" x="36" y="7" width="55" height="21"/>
+                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="爱舞" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aDe-eL-ysV">
+                    <rect key="frame" x="110" y="12" width="100" height="20"/>
+                    <constraints>
+                        <constraint firstAttribute="width" secondItem="aDe-eL-ysV" secondAttribute="height" multiplier="5:1" id="yev-NB-7Np"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" weight="heavy" pointSize="21"/>
+                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bZm-Jd-cvI">
+                    <rect key="frame" x="260" y="-1" width="52" height="49"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="49" id="IgV-DO-rci"/>
+                        <constraint firstAttribute="width" constant="52" id="M0r-Kx-wiY"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                    <state key="normal" image="nohender.png">
+                        <color key="titleColor" red="0.90196078430000004" green="0.043137254899999998" blue="0.18823529410000001" alpha="1" colorSpace="calibratedRGB"/>
+                    </state>
+                    <connections>
+                        <action selector="iconAction:" destination="aMJ-Cj-nKm" eventType="touchUpInside" id="1I8-sT-j9O"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" red="0.12941176470588237" green="0.13333333333333333" blue="0.16470588235294117" alpha="1" colorSpace="calibratedRGB"/>
+            <constraints>
+                <constraint firstItem="aDe-eL-ysV" firstAttribute="top" secondItem="aMJ-Cj-nKm" secondAttribute="top" constant="12" id="07A-Rq-bju"/>
+                <constraint firstAttribute="trailing" secondItem="bZm-Jd-cvI" secondAttribute="trailing" constant="8" id="Qnm-ed-ZGa"/>
+                <constraint firstAttribute="centerY" secondItem="aDe-eL-ysV" secondAttribute="centerY" id="fpW-tg-9Jb"/>
+                <constraint firstAttribute="centerX" secondItem="aDe-eL-ysV" secondAttribute="centerX" id="gde-ra-eh5"/>
+                <constraint firstItem="bZm-Jd-cvI" firstAttribute="centerY" secondItem="aMJ-Cj-nKm" secondAttribute="centerY" constant="1" id="owy-qr-Bes"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="viewNVC_icon_button" destination="bZm-Jd-cvI" id="0jJ-uL-mL9"/>
+                <outlet property="viewNVC_titileLabel" destination="aDe-eL-ysV" id="KJi-q1-hUa"/>
+                <outlet property="viewNVC_weather_button" destination="U4F-N9-8vm" id="bxr-gS-K3t"/>
+                <outlet property="viewNVC_weather_image" destination="CtW-V9-CKo" id="L3i-H9-8mY"/>
+                <outlet property="viewNVC_weather_temperature" destination="QtA-H6-jbE" id="jI5-oc-Zna"/>
+                <outlet property="viewNVC_weather_where" destination="kzJ-zG-JLY" id="Ur9-Xi-gfo"/>
+            </connections>
+            <point key="canvasLocation" x="123" y="139"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="nohender.png" width="26" height="26"/>
+    </resources>
+</document>

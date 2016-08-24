@@ -1,0 +1,175 @@
+//
+//  DanceViewController.m
+//  DancingDemol
+//
+//  Created by laouhn on 15/10/5.
+//  Copyright © 2015年 JHH. All rights reserved.
+//
+
+#import "DanceViewController.h"
+#import "TrainDetailCellDefine.h"
+#import "UIImageView+Asynclmage.h"
+
+@interface DanceViewController ()
+
+@end
+
+@implementation DanceViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+      [self.view addSubview:self.BGImageView];
+     [self.view addSubview:self.titleLable];
+    [self.view addSubview:self.iconImageView];
+    [self.view addSubview:self.likeCountIV];
+    [self.view addSubview:self.cellImageView];
+   
+  
+    [self.view addSubview:self.topLabel];
+    [self.view addSubview:self.timeLabel];
+   
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+
+// 背景
+- (UIImageView *)BGImageView {
+    if (!_BGImageView) {
+        CGRect frame = CGRectMake(kMargin, CGRectGetMaxY(self.titleLable.frame), kScreenWidth - 2 * kMargin, 0.4);
+        self.BGImageView = [[[UIImageView alloc] initWithFrame:frame] autorelease];
+        self.BGImageView.backgroundColor = [UIColor grayColor];
+        self.BGImageView.alpha = 1;
+    }
+    return [[_BGImageView retain] autorelease];
+}
+
+// 显示下标题
+- (UILabel *)titleLable {
+    if (!_titleLable) {
+        CGRect frame = CGRectMake(kMargin, kMarginTop_downTitle - 4 * kBaseScale, kScreenWidth - 2 * kMargin, 60);
+        self.titleLable = [[[UILabel alloc] initWithFrame:frame] autorelease];
+        self.titleLable.font = [UIFont systemFontOfSize:14];
+        self.titleLable.numberOfLines = 0;
+    }
+    return [[_titleLable retain] autorelease];
+}
+
+
+// 头像
+- (UIImageView *)iconImageView {
+    if (!_iconImageView) {
+        CGRect frame = CGRectMake(kMargin, CGRectGetMaxY(self.titleLable.frame), kWidth_icon, kWidth_icon);
+        self.iconImageView = [[[UIImageView alloc] initWithFrame:frame] autorelease];
+        self.iconImageView.backgroundColor = [UIColor whiteColor];
+        self.iconImageView.layer.cornerRadius = kWidth_icon / 2;
+        self.iconImageView.layer.masksToBounds = YES;
+    }
+    return [[_iconImageView retain] autorelease];
+}
+
+
+// 上标题
+- (UILabel *)topLabel {
+    if (!_topLabel) {
+        CGRect frame = CGRectMake(CGRectGetMaxX(self.iconImageView.frame) + kMargin, 5 + CGRectGetMaxY(self.titleLable.frame), kWidth_TopLab, kWidth_icon - 5);
+        self.topLabel = [[[UILabel alloc] initWithFrame:frame] autorelease];
+        self.topLabel.font = [UIFont systemFontOfSize:14];
+        self.topLabel.numberOfLines = 0;
+    }
+    return [[_topLabel retain ] autorelease];
+}
+
+// 喜欢人数
+- (UILabel *)likeCountIV {
+    if (!_likeCountIV) {
+        CGRect frame = CGRectMake(kScreenWidth - 4 * kMargin, kMargin + CGRectGetMaxY(self.titleLable.frame), 4 * kMargin, kWidth_icon);
+        self.likeCountIV = [[[UILabel alloc] initWithFrame:frame] autorelease];
+        self.likeCountIV.font = [UIFont systemFontOfSize:14];
+        UIImageView *likeView = [[UIImageView alloc] initWithFrame:CGRectMake(kScreenWidth - CGRectGetWidth(self.likeCountIV.frame) - kWidth_icon, kMargin + CGRectGetMaxY(self.titleLable.frame), kWidth_icon, kWidth_icon)];
+        likeView.tag = 200;
+        likeView.image = [UIImage imageNamed:@"Player_心_红色@2x"];
+        [self.view addSubview:likeView];
+        [likeView release];
+    }
+    return [[_likeCountIV retain] autorelease];
+}
+
+// 上传时间
+- (UILabel *)timeLabel {
+    if (!_timeLabel) {
+        self.timeLabel = [[[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(self.iconImageView.frame) + kMargin, CGRectGetMaxY(self.topLabel.frame), kScreenWidth / 5, kMargin)] autorelease];
+        self.timeLabel.font = [UIFont systemFontOfSize:10.0];
+        self.timeLabel.textColor = [UIColor grayColor];
+    }
+    return [[_timeLabel retain] autorelease];
+}
+
+
+// 显示图片
+- (UIImageView *)cellImageView {
+    if (!_cellImageView) {
+        CGRect frame = CGRectMake(0, CGRectGetMaxY(self.timeLabel.frame) + kMargin, kScreenWidth, kMargin);
+        self.cellImageView = [[[UIImageView alloc] initWithFrame:frame] autorelease];
+        self.cellImageView.backgroundColor = [UIColor grayColor];
+        self.cellImageView.alpha = 0.2;
+    }
+    return [[_cellImageView retain] autorelease];
+}
+
+// 控件赋值
+- (void)configureCellWithModel:(TrainRecommendModel *)model {
+//    [self.cellImageView JF_SetImageWithURLString:model.thumb];
+    [self.iconImageView JF_SetImageWithURLString:model.face];
+    self.titleLable.text = model.content;
+    self.topLabel.text = model.nicheng;
+    self.timeLabel.text = model.inserttime;
+    self.likeCountIV.text = model.likeCount;
+    // 通过内容长度 动态调整label 的高度
+     NSDictionary *dic = @{NSFontAttributeName:[UIFont systemFontOfSize:17]};
+            CGFloat height = [model.content boundingRectWithSize:CGSizeMake(kScreenWidth - 2 * kMargin, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading  attributes:dic context:nil].size.height;
+    if (height > 140) {
+        CGFloat temp = height;
+        temp = temp - 50;
+        height = temp;
+    }
+            //更改contentLabel高度
+            CGRect frame = self.titleLable.frame;
+            frame.size.height = height;
+            self.titleLable.frame = frame;
+    // 更新其他视图的frame
+    self.iconImageView.frame = CGRectMake(kMargin, kMargin + CGRectGetMaxY(self.titleLable.frame), kWidth_icon, kWidth_icon);
+    
+    self.BGImageView.frame = CGRectMake(kMargin, CGRectGetMaxY(self.titleLable.frame), kScreenWidth - 2 * kMargin, 0.4);
+    
+    self.topLabel.frame = CGRectMake(CGRectGetMaxX(self.iconImageView.frame) + kMargin, 0.5 * kMargin + CGRectGetMaxY(self.titleLable.frame), kWidth_TopLab, kWidth_icon - 5);
+    self.likeCountIV.frame = CGRectMake(kScreenWidth - 4 * kMargin, kMargin + CGRectGetMaxY(self.titleLable.frame), 4 * kMargin, kWidth_icon);
+    self.timeLabel.frame = CGRectMake(CGRectGetMaxX(self.iconImageView.frame) + kMargin, CGRectGetMaxY(self.topLabel.frame), kScreenWidth / 5, kMargin);
+    UIImageView *likeImageView = (UIImageView *)[self.view viewWithTag:200];
+    likeImageView.frame = CGRectMake(kScreenWidth - CGRectGetWidth(self.likeCountIV.frame) - kWidth_icon, kMargin + CGRectGetMaxY(self.titleLable.frame), kWidth_icon, kWidth_icon);
+    self.cellImageView.frame = CGRectMake(0, CGRectGetMaxY(self.timeLabel.frame) +  kMargin, kScreenWidth, kMargin);
+    
+}
+
+
+
+- (void)dealloc
+{
+    self.timeLabel = nil;
+    self.topLabel = nil;
+    self.BGImageView = nil;
+    self.iconImageView = nil;
+    self.lengthLabel = nil;
+    self.cellImageView = nil;
+    self.titleLable = nil;
+    self.likeCountIV = nil;
+    [super dealloc];
+}
+
+
+
+
+@end

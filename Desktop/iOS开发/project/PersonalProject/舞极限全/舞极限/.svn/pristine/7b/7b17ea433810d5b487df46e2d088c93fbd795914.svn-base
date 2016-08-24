@@ -1,0 +1,496 @@
+//
+//  TrainDetailViewController.m
+//  DancingDemol
+//
+//  Created by laouhn on 15/9/22.
+//  Copyright (c) 2015年 JHH. All rights reserved.
+//
+
+#import "TrainDetailViewController.h"
+#import "BasicNVC.h"
+#import "TrainDetailCellDefine.h"
+#import "movieStateView.h"
+#import "UIImageView+Asynclmage.h"
+#import "danceViewController/DanceViewController.h"
+#import "ThumbView.h"
+#import "SingleTon.h"
+#import "NetWorkManager.h"
+#import "TrainDetailModel.h"
+
+
+
+
+
+@interface TrainDetailViewController () {
+    BOOL _played;
+    BOOL _touch;
+    BOOL _screenBtn;
+    NSString *_totalTime;
+    NSDateFormatter *_dateFormatter;
+}
+
+
+@property (nonatomic, retain) AVPlayerItem *playerItem;
+@property (nonatomic, retain) UIButton *stateButton;
+@property (nonatomic, retain) id playbackTimeObserver;
+@property (nonatomic, retain) AVPlayerLayer *layer;
+@property (nonatomic, retain) NSTimer *HiTimer;
+
+@end
+
+@implementation TrainDetailViewController
+
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // 自定义导航条
+    [self customizationNabigationBar];
+    
+    NSLog(@"==========%@", self);
+    
+    // 添加内容页
+    [self addContentView];
+ 
+    // 数据解析
+    [self getMoviePath:self.listModel.listID];
+}
+
+
+// 解析完数据添加相关控件
+- (void)addSubView:(NSString *)str {
+    
+    // 添加视频控件
+    [self addDancePlayer:str];
+    //    [self addPlayerBarGBImage];
+    // 添加视频显示图
+    [self addMovieView];
+    // 添加player 上的button
+    [self.view addSubview:self.stateButton];
+    // 添加视频状态条
+    [self addMovieStateBar];
+//    [self addBtn];
+
+    // 自定义导航条
+//    [self configureNavigationBarContent];
+}
+
+
+// 自定义导航条
+- (void)configureNavigationBarContent {
+    // left item
+    UIBarButtonItem *leftBtn = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navbar-icon-back-white@2x"] style:UIBarButtonItemStylePlain target:self action:@selector(handleLeftAction:)];
+    self.navigationItem.leftBarButtonItem = leftBtn;
+    [leftBtn release];
+    
+    
+
+//    // title
+//    self.navigationItem.title = @"通讯录";
+//    // right edit
+//    self.navigationItem.rightBarButtonItem = self.editButtonItem;
+}
+
+// 导航条左边按钮触发事件
+- (void)handleLeftAction:(UIBarButtonItem *)btn {
+    NSLog(@"al;jdfoaindfgiog");
+    [self.dancePlayer pause];
+    self.navigationController.navigationBarHidden = NO;
+    [self.navigationController popToRootViewControllerAnimated:NO];
+}
+
+
+- (void)addBtn {
+    UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(20, 100, 50, 50)];
+    btn.backgroundColor = [UIColor cyanColor];
+    [btn addTarget:self action:@selector(btnAction:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:btn];
+    
+}
+- (void)btnAction:(UIButton *)btn {
+    
+    [self.dancePlayer pause];
+//    self.dancePlayer seekToTime:<#(CMTime)#>
+}
+
+
+
+// 视频中心按钮
+- (UIButton *)stateButton {
+    if (!_stateButton) {
+        self.stateButton = [[[UIButton alloc] initWithFrame:CGRectMake(13.5 * kBaseScale, 6.5 * kBaseScale, 5 * kBaseScale, 5 * kBaseScale)] autorelease];
+//        self.stateButton.backgroundColor= [UIColor yellowColor];
+        [self.stateButton setImage:[UIImage imageNamed:@"dd_item_playicon@2x副本"] forState:UIControlStateNormal];
+        [self.stateButton addTarget:self action:@selector(stateButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    }
+    return [[_stateButton retain] autorelease];
+}
+
+//stateButton 点击事件
+- (void)stateButtonAction:(UIButton *)btn {
+    btn.hidden = YES;
+     self.movieImage.image = nil;
+    movieStateView *stateView = (movieStateView *)[self.view viewWithTag:300];
+    stateView.hidden = NO;
+    if (!_played) {
+        [self.dancePlayer play];
+        [stateView.stateBtn setImage:[UIImage imageNamed:@"Player_暂停@2x"] forState:UIControlStateNormal];
+        self.stateButton.hidden = YES;
+    } else {
+        [self.dancePlayer pause];
+        [stateView.stateBtn setImage:[UIImage imageNamed:@"dd_item_playicon@2x"] forState:UIControlStateNormal];
+        self.stateButton.hidden = NO;
+    }
+    _played = !_played;
+}
+
+
+- (void)addPlayerBarGBImage {
+    UIImageView *imageView = [[[UIImageView alloc] initWithFrame:CGRectMake(kMargin, 20 * kBaseScale, kScreenWidth - 2 * kMargin, 1)] autorelease];
+    imageView.alpha = 0.4;
+    imageView.image = [UIImage imageNamed:@"picflow_title_bg@2x副本"];
+    [self.view addSubview:imageView];
+}
+
+
+// 添加视频显示图片
+- (void)addMovieView {
+    self.movieImage = [[[UIImageView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, 18 * kBaseScale)] autorelease];
+    self.movieImage.userInteractionEnabled = YES;
+    
+    if (self.viewTag == 0) {
+         [self.movieImage JF_SetImageWithURLString:self.model.thumb];
+      
+    } else {
+         [self.movieImage JF_SetImageWithURLString:self.listModel.imageName];
+    }
+    
+    
+    [self.view addSubview:self.movieImage];
+    
+        // 给player 添加手势
+        UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
+        // 设置轻拍的次数
+        tapGesture.numberOfTapsRequired = 1;
+        // 设置触摸的点数
+        tapGesture.numberOfTouchesRequired = 1;
+        // 2.将手势添加到视图上
+        [self.movieImage addGestureRecognizer:tapGesture];
+        // 3.释放
+        [tapGesture release];
+}
+
+// 手势触发事件
+- (void)handleTapGesture:(UITapGestureRecognizer *)recognizer {
+    movieStateView *stateView = (movieStateView *)[self.view viewWithTag:300];
+    // 判断触摸的Bool值来确定是否隐藏 stareView
+    
+    if (!_touch) {
+        stateView.hidden = NO;
+        // 使用定时器隐藏stateView
+        [self useTimerToHiddenStateView];
+        
+    } else {
+       stateView.hidden = YES;
+    }
+    _touch = !_touch;
+}
+
+// 自定义导航条
+- (void)customizationNabigationBar {
+    self.navigationItem.title = @"详情";
+}
+
+
+// 视频控件设置
+- (void)addDancePlayer:(NSString *)movieStr {
+    // 视频连接
+    NSString *str = [NSString new];
+    if (self.viewTag == 0) {
+        str = [NSString stringWithFormat:@"%@", self.movieStr];
+    } else {
+        str = movieStr;
+    }
+     NSURL *movieURL = [NSURL URLWithString:str];
+   
+    self.playerItem = [AVPlayerItem playerItemWithURL:movieURL];
+    self.dancePlayer = [AVPlayer playerWithPlayerItem:self.playerItem];
+    self.layer = [AVPlayerLayer playerLayerWithPlayer:self.dancePlayer];
+    //self.layer.transform = CATransform3D
+   
+    [self.playerItem addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:nil];// 监听status属性
+    [self.playerItem addObserver:self forKeyPath:@"loadedTimeRanges" options:NSKeyValueObservingOptionNew context:nil];// 监听loadedTimeRanges属性
+    
+    self.layer.frame = CGRectMake(0, 0, kScreenWidth, kBaseScale * 18);
+    self.layer.backgroundColor = [UIColor blackColor].CGColor;
+    [self.view.layer addSublayer:self.layer];
+    
+}
+
+
+// 添加视频状态条
+- (void)addMovieStateBar {
+    movieStateView *stateView = [[[movieStateView alloc] initWithFrame:CGRectMake(0, 14 * kBaseScale, kScreenWidth, 4 * kBaseScale)] autorelease];
+    stateView.hidden = YES;
+    stateView.tag = 300;
+    
+    [stateView.screenStateBtn addTarget:self action:@selector(screenStateBtnAction:) forControlEvents:UIControlEventTouchUpInside];
+    
+    [stateView.stateBtn addTarget:self action:@selector(handleAction:) forControlEvents:UIControlEventTouchUpInside];
+       [self.view addSubview:stateView];
+}
+
+// 全屏按钮点击事件
+- (void)screenStateBtnAction:(UIButton *)btn {
+    if (!_screenBtn) {
+        self.view.transform = CGAffineTransformMakeRotation(M_PI*0.5);
+        self.navigationController.navigationBarHidden = YES;
+        self.layer.frame = CGRectMake(20, 0, [UIScreen mainScreen].bounds.size.height - 20, kScreenWidth);
+        self.movieImage.frame = CGRectMake(20, 0, [UIScreen mainScreen].bounds.size.height - 20, kScreenWidth);
+        movieStateView *stateView = (movieStateView *)[self.view viewWithTag:300];
+        stateView.frame = CGRectMake(([UIScreen mainScreen].bounds.size.height - 20 - kScreenWidth) / 2, kScreenWidth - 4 * kBaseScale, kScreenWidth, 4 * kBaseScale);
+        self.stateButton.frame = CGRectMake(([UIScreen mainScreen].bounds.size.height - 20 - 5 * kBaseScale) / 2, (kScreenWidth - 5 * kBaseScale) / 2, 5 * kBaseScale, 5 * kBaseScale);
+        ((DanceViewController *)self.childViewControllers.lastObject).view.hidden = YES;
+    } else {
+        self.view.transform = CGAffineTransformMakeRotation(M_PI*0);
+        self.navigationController.navigationBarHidden = NO;
+        self.layer.frame = CGRectMake(0, 0, kScreenWidth, 18 * kBaseScale);
+          self.movieImage.frame = CGRectMake(0, 0, kScreenWidth, 18 * kBaseScale);
+        movieStateView *stateView = (movieStateView *)[self.view viewWithTag:300];
+        stateView.frame = CGRectMake(0, 14 * kBaseScale, kScreenWidth, 4 * kBaseScale);
+        ((DanceViewController *)self.childViewControllers.lastObject).view.hidden = NO;
+        self.stateButton.frame = CGRectMake(13.5 * kBaseScale, 6.5 * kBaseScale, 5 * kBaseScale, 5 * kBaseScale);
+    }
+    _screenBtn = !_screenBtn;
+   
+}
+
+
+- (void)monitoringPlayback:(AVPlayerItem *)playerItem timgNumer:(CGFloat)timeNumber{
+    
+    self.playbackTimeObserver = [self.dancePlayer addPeriodicTimeObserverForInterval:CMTimeMake(1, 1) queue:NULL usingBlock:^(CMTime time) {
+        CGFloat currentSecond = playerItem.currentTime.value/playerItem.currentTime.timescale;// 计算当前在第几秒
+        NSString *timeString = [self convertTime:currentSecond];
+        // 给timeLabel赋值
+        movieStateView *stateView = (movieStateView *)[self.view viewWithTag:300];
+        stateView.timeLable.text = [NSString stringWithFormat:@"%@ / %@", timeString, _totalTime];
+        // 滑块的位置.
+        stateView.thumbView.frame = CGRectMake((kBaseScale * 3 + 2 * kMargin) + currentSecond * (22 * kBaseScale - kMargin)/timeNumber, 4 + kMargin / 2, 14, 14);
+
+        // progressView 的进度
+        CGFloat number = currentSecond / timeNumber;
+        [stateView.progressView setProgress:number animated:YES];
+    }];
+}
+
+// 定时器触发事件
+- (void)timerAction {
+     movieStateView *stateView = (movieStateView *)[self.view viewWithTag:300];
+    stateView.hidden = YES;
+}
+
+
+// 使用定时器隐藏stateView
+- (void)useTimerToHiddenStateView {
+     [self.HiTimer invalidate];
+    movieStateView *stateView = (movieStateView *)[self.view viewWithTag:300];
+    if (!stateView.hidden) {
+        
+        // 设置定时器, 三秒隐藏stateView
+       self.HiTimer = [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(timerAction) userInfo:nil  repeats:YES];
+    }
+}
+
+
+- (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable id)object change:(nullable NSDictionary *)change context:(nullable void *)context {
+    AVPlayerItem *playerItem = (AVPlayerItem *)object;
+//   CGFloat a = [SingleTon sendDataSingleton].mar;
+    if ([keyPath isEqualToString:@"status"]) {
+        if ([playerItem status] == AVPlayerStatusReadyToPlay) {
+            NSLog(@"AVPlayerStatusReadyToPlay");
+//            CMTime duration = self.playerItem.duration;// 获取视频总长度
+            CGFloat totalSecond = playerItem.duration.value / playerItem.duration.timescale;// 转换成秒
+           
+            _totalTime = [self convertTime:totalSecond];// 转换成播放时间
+    
+           movieStateView *stateView = (movieStateView *)[self.view viewWithTag:300];
+            stateView.timeLable.text = [NSString stringWithFormat:@"00:00 / %@", _totalTime];
+//            [self customVideoSlider:duration];// 自定义UISlider外观
+//            NSLog(@"movie total duration:%f",CMTimeGetSeconds(duration));
+            [self monitoringPlayback:self.playerItem timgNumer:totalSecond];// 监听播放状态
+            
+        } else if ([playerItem status] == AVPlayerStatusFailed) {
+            NSLog(@"AVPlayerStatusFailed");
+        }
+    } else if ([keyPath isEqualToString:@"loadedTimeRanges"]) {
+        NSTimeInterval timeInterval = [self availableDuration];// 计算缓冲进度
+        CMTime duration = _playerItem.duration;
+        CGFloat totalDuration = CMTimeGetSeconds(duration);
+         movieStateView *stateView = (movieStateView *)[self.view viewWithTag:300];
+        
+        [stateView.cushionView  setProgress:timeInterval / totalDuration animated:YES];
+    }
+
+}
+
+
+- (NSString *)convertTime:(CGFloat)second{
+    NSDate *d = [NSDate dateWithTimeIntervalSince1970:second];
+    if (second/3600 >= 1) {
+        [[self dateFormatter] setDateFormat:@"HH:mm:ss"];
+    } else {
+        [[self dateFormatter] setDateFormat:@"mm:ss"];
+    }
+    NSString *showtimeNew = [[self dateFormatter] stringFromDate:d];
+    return showtimeNew;
+}
+- (NSDateFormatter *)dateFormatter {
+    if (!_dateFormatter) {
+        _dateFormatter = [[NSDateFormatter alloc] init];
+    }
+    return _dateFormatter;
+}
+
+
+// stateView上的开始暂停按钮的点击时间
+- (void)handleAction:(UIButton *)btn {
+    self.movieImage.image = nil;
+    if (!_played) {
+        [self.dancePlayer play];
+        [btn setImage:[UIImage imageNamed:@"跳吧播放详情_暂停@2x"] forState:UIControlStateNormal];
+        self.stateButton.hidden = YES;
+        
+    } else {
+        [self.dancePlayer pause];
+        [btn setImage:[UIImage imageNamed:@"跳吧播放详情_开始@2x"] forState:UIControlStateNormal];
+        self.stateButton.hidden = NO;
+    }
+    _played = !_played;
+    // 使用定时器隐藏stateView
+    [self useTimerToHiddenStateView];
+}
+
+- (NSTimeInterval)availableDuration {
+    NSArray *loadedTimeRanges = [[self.dancePlayer currentItem] loadedTimeRanges];
+    CMTimeRange timeRange = [loadedTimeRanges.firstObject CMTimeRangeValue];// 获取缓冲区域
+    float startSeconds = CMTimeGetSeconds(timeRange.start);
+    float durationSeconds = CMTimeGetSeconds(timeRange.duration);
+    NSTimeInterval result = startSeconds + durationSeconds;// 计算缓冲总进度
+    return result;
+}
+
+
+
+
+
+
+- (void)dealloc
+{
+    [self.playerItem removeObserver:self forKeyPath:@"status" context:nil];
+    [self.playerItem removeObserver:self forKeyPath:@"loadedTimeRanges" context:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:self.playerItem];
+    [self.dancePlayer removeTimeObserver:self.playbackTimeObserver];
+
+    self.HiTimer = nil;
+    self.layer = nil;
+    self.playbackTimeObserver = nil;
+    self.model = nil;
+    self.movieImage = nil;
+    self.movieStr = nil;
+    self.stateButton = nil;
+    self.playerItem = nil;
+    self.dancePlayer = nil;
+    self.detailID = nil;
+    self.listModel = nil;
+    [super dealloc];
+}
+
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
++ (Class)layerClass {
+    return [AVPlayerLayer class];
+}
+
+- (AVPlayer *)player {
+    return [(AVPlayerLayer *)[self dancePlayer] player];
+}
+
+- (void)setPlayer:(AVPlayer *)player {
+    [(AVPlayerLayer *)[self dancePlayer] setPlayer:player];
+}
+
+
+
+#pragma mark -- contentView
+// 添加内容页
+- (void)addContentView {
+    DanceViewController *danceVC = [[DanceViewController alloc] init];
+    
+    [danceVC configureCellWithModel:self.model];
+    [self addChildViewController:danceVC];
+    [self.view addSubview:danceVC.view];
+    [danceVC release];
+    
+}
+
+
+
+
+//该方法为视图的方法, 当旋转时, 视图会自动调用该方法, 用来重新布局子视图
+- (void)layoutSubviews {
+    [self.view layoutSubviews];
+    // 1.获取当前屏幕所处的状态(旋转方向)
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    // 2.判断屏幕的方向, 调整子视图.
+    switch (orientation) {
+        case UIInterfaceOrientationPortrait:
+            //NSLog(@"竖屏");
+            // break;
+        case UIInterfaceOrientationPortraitUpsideDown:
+            //NSLog(@"倒置");
+           self.layer.frame = CGRectMake(0, 0, kScreenWidth, kBaseScale * 18);
+            
+            break;
+        case UIInterfaceOrientationLandscapeLeft:
+            //NSLog(@"左横屏");
+            // break;
+        case UIInterfaceOrientationLandscapeRight:
+             self.layer.frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.height, kScreenWidth);
+            //NSLog(@"右横屏");
+            break;
+        default:
+            break;
+    }
+    
+}
+
+
+- (void)getMoviePath:(NSString *)str {
+    NSString *urlStr = [NSString stringWithFormat:@"http://client-api.dingdone.com/97AX8NW8A6/content/%@", str];
+    NSLog(@"-----------%@", str);
+    NetWorkManager *net = [[NetWorkManager alloc] init] ;
+    [net getDataWithURLString:urlStr success:^(NetWorkManager *net, id object) {
+        // 封装
+        TrainDetailModel *model = [[[TrainDetailModel alloc] initWithDictionary:object[@"data"][@"video"]] autorelease];
+        
+        NSString *str = [NSString stringWithFormat:@"%@/%@", model.host, model.filepath];
+        NSLog(@"%@", str);
+        // 解析完数据添加相关控件
+        [self addSubView:str];
+        
+        //        NSLog(@"%@", [NSString stringWithFormat:@"%@%@", model.host, model.filepath]);
+        
+    } fialBlock:^(NetWorkManager *net, NSError *error) {
+        NSLog(@"%@", error);  // 解析失败
+    }];
+    [net release];
+    
+}
+
+
+
+
+@end
